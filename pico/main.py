@@ -5,29 +5,23 @@ import uasyncio
 import ujson
 from urllib import urequest
 from picographics import PicoGraphics, DISPLAY_INKY_PACK
+from pimoroni import Button
 
 
 """
-Grab the quote of the day from Wikipedia.
+Simple demo to get a random activity from BoredAPI.com
 """
 
+
+button_a = Button(12)
+button_b = Button(13)
+button_c = Button(14)
 
 graphics = PicoGraphics(DISPLAY_INKY_PACK)
+graphics.set_font("bitmap8")
 
 WIDTH, HEIGHT = graphics.get_bounds()
-ENDPOINT = "https://en.wikiquote.org/w/api.php?format=json&action=expandtemplates&prop=wikitext&text={{{{Wikiquote:Quote%20of%20the%20day/{3}%20{2},%20{0}}}}}"
-MONTHNAMES = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
-
-
-last_date = ""
-
-
-def parse_qotd(text):
-    text = text.split("\n")
-    return (
-        text[6][2:].replace("[[", "").replace("]]", "").replace("<br>", '\n').replace("<br />", '\n'),  # Quote
-        text[8].split("|")[2][5:-4]                                                                     # Author
-    )
+ENDPOINT = "https://www.boredapi.com/api/activity"
 
 
 def status_handler(mode, status, ip):
@@ -50,38 +44,30 @@ def status_handler(mode, status, ip):
 
 network_manager = NetworkManager(WIFI_CONFIG.COUNTRY, status_handler=status_handler)
 
-while True:
-    graphics.set_font("bitmap8")
-    graphics.set_update_speed(1)
 
+def update():
     uasyncio.get_event_loop().run_until_complete(network_manager.client(WIFI_CONFIG.SSID, WIFI_CONFIG.PSK))
 
-    date = list(time.localtime())[:3]
-    date.append(MONTHNAMES[date[1] - 1])
-
-    if "{3} {2}, {0}".format(*date) == last_date:
-        time.sleep(60)
-        continue
-
-    url = ENDPOINT.format(*date)
+    url = ENDPOINT
     print("Requesting URL: {}".format(url))
     j = ujson.load(urequest.urlopen(url))
 
-    text = j['expandtemplates']['wikitext']
+    print(j)
 
-    text, author = parse_qotd(text)
-
-    print(text)
-
+    graphics.set_update_speed(1)
     graphics.set_pen(15)
     graphics.clear()
     graphics.set_pen(0)
-    graphics.text("QoTD - {2} {3} {0:04d}".format(*date), 10, 10, scale=2)
-    graphics.text(text, 10, 30, wordwrap=WIDTH - 20, scale=1)
-    graphics.text(author, 10, 108, scale=1)
+    graphics.text(j["activity"], 10, 10, wordwrap=WIDTH - 20, scale=2)
+    graphics.text(j["type"], 10, 108, scale=2)
 
     graphics.update()
 
-    last_date = "{3} {2}, {0}".format(*date)
 
-    time.sleep(60)
+# Run continuously.
+# Be friendly to the API you're using!
+while True:
+    update()
+
+    while not button_a.is_pressed:
+        time.sleep(0.1)
