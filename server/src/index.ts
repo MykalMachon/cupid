@@ -32,7 +32,7 @@ const main = async () => {
   client.commands = new Collection();
 
   // sets up event listeners
-  const eventListenerFiles = await readdir('./src/events')
+  const eventListenerFiles = await readdir('./events')
   await new Promise<void>((resolve) => {
     eventListenerFiles.forEach((file, idx) => {
       client.on(file.split('.')[0], async (...args) => (await import(`./events/${file}`)).default(client, ...args))
@@ -43,7 +43,7 @@ const main = async () => {
 
   // sets up commands
   const commandData: Array<JSON> = []
-  const commandFiles = await readdir('./src/commands');
+  const commandFiles = await readdir('./commands');
   await new Promise<void>((resolve) => {
     commandFiles.forEach(async (file, idx) => {
       const command = (await import(`./commands/${file}`)).default;

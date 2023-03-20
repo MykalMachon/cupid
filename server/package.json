@@ -4,8 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "npx prisma migrate deploy && ts-node ./src/index.ts",
-    "dev": "ts-node ./src/index.ts",
+    "start": "npx prisma migrate deploy && cd ./dist && node ./index.js",
+    "dev": "cd ./src && ts-node ./index.ts",
+    "build": "tsc",
     "prisma:generate": "npx prisma generate",
     "prisma:migrate": "npx prisma migrate dev"
   },
