@@ -1,7 +1,10 @@
 import * as dotenv from 'dotenv'
-import express, { Application, Request, Response } from 'express'
 import { PrismaClient } from '@prisma/client'
 
+import express, { Application, Request, Response } from 'express'
+import bearerToken from 'express-bearer-token'
+
+import { isAuthenticated } from './middleware'
 
 // setup environment variables
 dotenv.config()
@@ -18,11 +21,15 @@ const getArrows = async () => {
 const app: Application = express()
 const port = process.env.PORT || 3000;
 
+// set generic middleware 
+app.use(bearerToken());
+
 app.get('/meta/ping', (req: Request, res: Response) => {
   return res.json({ message: 'pong' })
 })
 
-app.get('/arrows', async (req: Request, res: Response) => {
+// requires authentication
+app.get('/arrows', isAuthenticated, async (req: Request, res: Response) => {
   const arrows = await getArrows();
   return res.json(arrows);
 })
