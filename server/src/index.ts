@@ -37,10 +37,10 @@ const start = async () => {
   try {
     await server.listen({ port: parseInt(process.env.PORT || '3000') || 3000 })
 
-    const address = server.server.address()
+    const address = server.server.address()?.toString() || 'localhost'
     const port = process.env.PORT || '3000'
 
-    console.log(`[INFO] server started at ${address}:${port}`)
+    console.log(`[INFO] server started at http://localhost:${port}`)
 
   } catch (err) {
     server.log.error(err)
