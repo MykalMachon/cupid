@@ -33,6 +33,7 @@ const app: Application = express()
 const port = process.env.PORT || 3000;
 
 // set generic middleware 
+app.use(express.json());
 app.use(bearerToken());
 
 app.get('/meta/ping', (req: Request, res: Response) => {
@@ -52,6 +53,34 @@ app.get('/v1/arrows/:id', isAuthenticated, async (req: Request, res: Response) =
     return res.status(404).json({ message: 'Not found' });
   }
   return res.json(arrow);
+})
+
+app.patch('/v1/arrows/:id', isAuthenticated, async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const { seenAt } = req.body;
+
+  console.log(req.body);
+  console.log(seenAt);
+
+  // check if arrow exists
+  const arrow = await getArrow(id);
+  if (!arrow) {
+    return res.status(404).json({ message: 'Not found' });
+  }
+
+  // mark the arrow as seen or unseen
+  const prisma = new PrismaClient()
+  const updatedArrow = await prisma.note.update({
+    where: {
+      id: id
+    },
+    data: {
+      seenAt: new Date(seenAt)
+    }
+  });
+  await prisma.$disconnect()
+
+  return res.json(updatedArrow);
 })
 
 app.listen(port, function () {
