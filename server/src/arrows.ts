@@ -1,8 +1,9 @@
 import { PrismaClient } from '@prisma/client'
 
+const prisma = new PrismaClient()
 
 export const getArrows = async (unseen: boolean = true) => {
-  const prisma = new PrismaClient()
+  await prisma.$connect()
   const arrows = await prisma.note.findMany({
     where: {
       seenAt: unseen ? null : { not: null }
@@ -16,7 +17,7 @@ export const getArrows = async (unseen: boolean = true) => {
 }
 
 export const getArrow = async (id: string) => {
-  const prisma = new PrismaClient()
+  await prisma.$connect()
   const arrow = await prisma.note.findUnique({
     where: {
       id: id
@@ -28,7 +29,7 @@ export const getArrow = async (id: string) => {
 
 export const markArrowAsSeen = async (id: string) => {
   // mark the arrow as seen
-  const prisma = new PrismaClient()
+  await prisma.$connect()
   const updatedArrow = await prisma.note.update({
     where: {
       id: id
