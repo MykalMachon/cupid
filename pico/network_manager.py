@@ -53,7 +53,7 @@ class NetworkManager:
     async def wait(self, mode):
         while not self.isconnected():
             self._handle_status(mode, None)
-            await uasyncio.sleep_ms(1000)
+            await uasyncio.sleep_ms(500)
 
     def _handle_status(self, mode, status):
         if callable(self._status_handler):
@@ -93,7 +93,8 @@ class NetworkManager:
         self._sta_if.disconnect()
         self._sta_if.active(False)
 
-        self._ap_if.ifconfig(("10.10.1.1", "255.255.255.0", "10.10.1.1", "10.10.1.1"))
+        self._ap_if.ifconfig(
+            ("10.10.1.1", "255.255.255.0", "10.10.1.1", "10.10.1.1"))
         self._ap_if.config(password=self.UID)
         self._ap_if.active(True)
 
@@ -105,4 +106,3 @@ class NetworkManager:
             self._sta_if.active(False)
             self._handle_status(network.AP_IF, False)
             self._handle_error(network.AP_IF, "WIFI Client Failed")
-
