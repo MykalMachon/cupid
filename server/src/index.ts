@@ -1,32 +1,14 @@
 import * as dotenv from 'dotenv'
-import { PrismaClient } from '@prisma/client'
 
 import express, { Application, Request, Response } from 'express'
 import bearerToken from 'express-bearer-token'
 
 import { isAuthenticated } from './middleware'
+import { getArrows, getArrow, markArrowAsSeen } from './arrows'
 
 // setup environment variables
 dotenv.config()
 
-// setup utility functions
-const getArrows = async () => {
-  const prisma = new PrismaClient()
-  const arrows = await prisma.note.findMany();
-  await prisma.$disconnect()
-  return arrows;
-}
-
-const getArrow = async (id: string) => {
-  const prisma = new PrismaClient()
-  const arrow = await prisma.note.findUnique({
-    where: {
-      id: id
-    }
-  });
-  await prisma.$disconnect()
-  return arrow;
-}
 
 // setup express
 const app: Application = express()
@@ -42,12 +24,18 @@ app.get('/meta/ping', (req: Request, res: Response) => {
 
 // requires authentication
 app.get('/v1/arrows', isAuthenticated, async (req: Request, res: Response) => {
+  // TODO: add pagination
+  // TODO: enable filtering for seen/unseen.
+  console.log(`API: getting all unseen arrows.`)
   const arrows = await getArrows();
   return res.json(arrows);
 })
 
 app.get('/v1/arrows/:id', isAuthenticated, async (req: Request, res: Response) => {
   const { id } = req.params;
+
+  console.log(`API: getting arrow ${id}.`)
+
   const arrow = await getArrow(id);
   if (!arrow) {
     return res.status(404).json({ message: 'Not found' });
@@ -57,29 +45,20 @@ app.get('/v1/arrows/:id', isAuthenticated, async (req: Request, res: Response) =
 
 app.patch('/v1/arrows/:id', isAuthenticated, async (req: Request, res: Response) => {
   const { id } = req.params;
-  const { seenAt } = req.body;
+  
+  console.log(`API: marking arrow ${id} as seen.`)
 
-  console.log(req.body);
-  console.log(seenAt);
-
+  // TODO: add validation and get other info
+  // const { seenAt } = req.body;
+  
   // check if arrow exists
   const arrow = await getArrow(id);
   if (!arrow) {
     return res.status(404).json({ message: 'Not found' });
   }
 
-  // mark the arrow as seen or unseen
-  const prisma = new PrismaClient()
-  const updatedArrow = await prisma.note.update({
-    where: {
-      id: id
-    },
-    data: {
-      seenAt: new Date(seenAt)
-    }
-  });
-  await prisma.$disconnect()
-
+  // mark the arrow as seen
+  const updatedArrow = await markArrowAsSeen(id);
   return res.json(updatedArrow);
 })
 
