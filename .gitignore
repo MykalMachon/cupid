@@ -104,3 +104,4 @@ dist
 .tern-port
 
 WIFI_CONFIG.py
+postgres-data/

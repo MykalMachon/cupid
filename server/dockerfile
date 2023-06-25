@@ -1,0 +1,14 @@
+FROM node:20-alpine
+
+# copy over package.json and source code
+WORKDIR /app
+COPY . .
+
+# install dependencies
+RUN npm ci
+
+# set the port to expose
+EXPOSE ${PORT}
+
+# setup command to start
+CMD ["npm", "start"]
