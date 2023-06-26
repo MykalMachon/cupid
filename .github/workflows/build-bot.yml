@@ -35,7 +35,7 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           context: ./bot
-          file: ./dockerfile
+          file: dockerfile
           platforms: linux/amd64, linux/arm64 
           push: true
           tags: ghcr.io/${{ env.REPO_LOWERCASE }}-bot:latest
