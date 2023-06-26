@@ -5,6 +5,8 @@ on:
       - main
     paths:
       - 'bot/**'
+  workflow_dispatch:
+    
 jobs:
   build:
     runs-on: ubuntu-latest
