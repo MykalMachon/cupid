@@ -2,7 +2,7 @@ name: "Build & Push Server Container"
 on:
   push:
     branches:
-      - master
+      - main
     paths:
       - 'server/**'
 jobs:
