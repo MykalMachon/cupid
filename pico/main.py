@@ -23,8 +23,8 @@ graphics.set_font("bitmap8")
 
 WIDTH, HEIGHT = graphics.get_bounds()
 
-ENDPOINT = "https://cupid.mykal.codes"
-API_KEY = "QPReF8g2V7cGqFKajSzU"
+ENDPOINT = WIFI_CONFIG.ENDPOINT
+API_KEY = WIFI_CONFIG.API_KEY
 
 def clear_screen():
     graphics.set_pen(15)
