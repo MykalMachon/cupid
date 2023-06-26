@@ -1,4 +1,4 @@
-name: "Build & Push Bot Container"
+name: "Build & Push Server Container"
 on:
   push:
     branches:
