@@ -10,9 +10,7 @@ services:
       - ./postgres-data:/var/lib/postgresql/data
     restart: unless-stopped
   api-server:
-    build:
-      context: ./server
-      dockerfile: dockerfile
+    image: ghcr.io/mykalmachon/cupid-server:latest
     ports:
       - '${PORT}:${PORT}'
     environment:
@@ -25,9 +23,7 @@ services:
       - postgres
     restart: unless-stopped
   discord-bot:
-    build:
-      context: ./bot
-      dockerfile: dockerfile
+    image: ghcr.io/mykalmachon/cupid-bot:latest
     environment:
       - NODE_ENV=production
       - TZ
