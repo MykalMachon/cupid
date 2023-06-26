@@ -6,6 +6,7 @@ COPY . .
 
 # install dependencies
 RUN npm ci
+RUN npm run build
 
 # setup command to start
 CMD ["npm", "start"]
