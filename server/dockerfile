@@ -4,8 +4,9 @@ FROM node:20-alpine
 WORKDIR /app
 COPY . .
 
-# install dependencies
+# install dependencies & build app
 RUN npm ci
+RUN npm run build
 
 # set the port to expose
 EXPOSE ${PORT}
