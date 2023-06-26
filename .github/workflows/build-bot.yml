@@ -6,7 +6,7 @@ on:
     paths:
       - 'bot/**'
   workflow_dispatch:
-    
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -34,4 +34,4 @@ jobs:
           file: ./bot/dockerfile
           platforms: linux/amd64, linux/arm64 
           push: true
-          tags: ghcr.io/MykalMachon/${{ github.repository }}-bot:latest
+          tags: ghcr.io/${{ github.repository }}-bot:latest
